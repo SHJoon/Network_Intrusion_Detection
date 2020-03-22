@@ -5,7 +5,7 @@ from sklearn import preprocessing
 
 # Change the following variables as desired.
 # 'k_value' is any positive integer
-k_value = 4
+k_value = 5
 
 # Assign column names to the dataset
 names = ['duration', 'protocol_type', 'service',\
@@ -22,6 +22,7 @@ names = ['duration', 'protocol_type', 'service',\
 # Read dataset to pandas dataframe
 train_dataset = pd.read_csv("KDDTrain+20Percent.txt", names=names)
 
+# Label encoder transforms the dataframe into integers accordinglyp
 label_encoder = preprocessing.LabelEncoder()
 transform_train = train_dataset.iloc[:, :-2].apply(label_encoder.fit_transform)
 
@@ -47,8 +48,27 @@ classifier = KNeighborsClassifier(n_neighbors=k_value)
 classifier.fit(X_train, y_train_fit)
 
 y_pred = classifier.predict(X_test)
+print(y_pred)   
 
 # Print out the results
 from sklearn.metrics import classification_report, confusion_matrix
 print(confusion_matrix(y_test_fit.astype(str), y_pred.astype(str)))
 print(classification_report(y_test_fit, y_pred))
+
+# Calculating error for K values between 1 and 40
+error = []
+for i in range(1, 40):
+    knn = KNeighborsClassifier(n_neighbors=i)
+    knn.fit(X_train, y_train_fit)
+    pred_i = knn.predict(X_test)
+    error.append(np.mean(pred_i != y_test_fit))
+    print(error[i-1])
+
+# Plot the Error Rate per k value graph
+plt.figure(figsize=(12, 6))
+plt.plot(range(1, 40), error, color='red', linestyle='dashed', marker='o',
+         markerfacecolor='blue', markersize=10)
+plt.title('Error Rate K Value')
+plt.xlabel('K Value')
+plt.ylabel('Mean Error')
+plt.show()
