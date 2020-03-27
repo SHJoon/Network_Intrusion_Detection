@@ -44,7 +44,7 @@ X_test = scaler.transform(X_test_fit)
 
 # Apply the k-nearest neighbors classifier
 from sklearn.neighbors import KNeighborsClassifier
-classifier = KNeighborsClassifier(n_neighbors=k_value, algorithm="ball_tree")
+classifier = KNeighborsClassifier(n_neighbors=k_value)
 classifier.fit(X_train, y_train_fit)
 
 y_pred = classifier.predict(X_test)
