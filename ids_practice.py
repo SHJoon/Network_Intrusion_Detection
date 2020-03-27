@@ -15,7 +15,7 @@ names = ["duration","protocol_type","service","flag","src_bytes",
 
 
 kdd_data_10percent = pd.read_csv("KDD10.txt", header=None, names=names)
-# print(kdd_data_10percent.describe())
+print(kdd_data_10percent.describe())
 
 # print(kdd_data_10percent['label'].value_counts())
 num_features = [
@@ -31,7 +31,7 @@ num_features = [
     "dst_host_rerror_rate","dst_host_srv_rerror_rate"
 ]
 features = kdd_data_10percent[num_features].astype(float)
-# print(features.describe())
+print(features.describe())
 
 from sklearn.neighbors import KNeighborsClassifier
 labels = kdd_data_10percent['label'].copy()
@@ -49,15 +49,17 @@ clf.fit(features,labels)
 tt = time()-t0
 print("Classifier trained in {} seconds".format(round(tt,3)))
 
-kdd_data_corrected = pd.read_csv("corrected.txt", header=None, names = names)
+kdd_data_corrected = pd.read_csv("corrected.txt", header=None, names=names)
 print(kdd_data_corrected['label'].value_counts())
+print(kdd_data_corrected.describe())
 
 kdd_data_corrected['label'][kdd_data_corrected['label']!='normal.'] = 'attack.'
 print(kdd_data_corrected['label'].value_counts())
 
 from sklearn.model_selection import train_test_split
 kdd_data_corrected[num_features] = kdd_data_corrected[num_features].astype(float)
-kdd_data_corrected = pd.DataFrame(minmax.fit_transform(kdd_data_corrected[num_features].values), columns=num_features)
+kdd_data_corrected[num_features] = pd.DataFrame(minmax.fit_transform(kdd_data_corrected[num_features].values), columns=num_features)
+print(kdd_data_corrected)
 # kdd_data_corrected[num_features].apply(lambda x: MinMaxScaler().fit_transform(x))
 
 features_train, features_test, labels_train, labels_test = train_test_split(
@@ -76,3 +78,30 @@ from sklearn.metrics import accuracy_score
 acc = accuracy_score(pred, labels_test)
 print(acc)
 print("R squared is {}.".format(round(acc,4)))
+
+from sklearn.cluster import KMeans
+k = 30
+km = KMeans(n_clusters = k)
+
+
+t0 = time()
+km.fit(features)
+tt = time()-t0
+print("Clustered in {} seconds".format(round(tt,3)))
+
+print(pd.Series(km.labels_).value_counts())
+
+labels = kdd_data_10percent['label']
+label_names = list(map(
+    lambda x: pd.Series([labels[i] for i in range(len(km.labels_)) if km.labels_[i]==x]), 
+    range(k)))
+
+for i in range(k):
+    print("Cluster {} labels:".format(i))
+    print(label_names[i].value_counts())
+    print()
+
+t0 = time()
+pred = km.predict(kdd_data_corrected[num_features])
+tt = time() - t0
+print("Assigned clusters in {} seconds".format(round(tt,3)))
