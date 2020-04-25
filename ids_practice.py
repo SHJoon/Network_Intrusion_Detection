@@ -17,7 +17,7 @@ features = pd.DataFrame(minmax.fit_transform(features.values), columns=num_featu
 
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
-clf = KNeighborsClassifier(n_neighbors = 5, algorithm = 'ball_tree', leaf_size=500)
+clf = KNeighborsClassifier(n_neighbors = 5, algorithm = 'ball_tree', leaf_size = 500)
 # clf = GaussianNB()
 t0 = time()
 clf.fit(features,labels)

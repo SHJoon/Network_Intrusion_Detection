@@ -48,7 +48,7 @@ print(f"Bayes Classifier Accuracy: {b_acc}")
 
 # Apply the k-nearest neighbors classifier
 from sklearn.neighbors import KNeighborsClassifier
-classifier = KNeighborsClassifier(n_neighbors=k_value)
+classifier = KNeighborsClassifier(n_neighbors = k_value, algorithm = 'ball_tree', leaf_size = 500)
 classifier.fit(X_train_fit, y_train_fit)
 
 y_pred = classifier.predict(X_test_fit)
